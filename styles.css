@@ -41,7 +41,7 @@ body {
 header {
     background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
     color: #ffffff;
-    padding: 40px 0;
+    padding: px 0;
     text-align: center;
     box-shadow: 0 4px 16px var(--shadow-color);
     border-radius: 0 0 var(--border-radius) var(--border-radius);
