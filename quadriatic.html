@@ -1,117 +1,39 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Quadriatic equation solver</title>
-        <link rel="stylesheet" href="styles.css"> <!-- Link your CSS file correctly -->
-        <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet"> <!-- AOS Animations -->
-        <script src="https://kit.fontawesome.com/yourkitid.js" crossorigin="anonymous"></script> <!-- Font Awesome -->
-    </head>
-    <body>
-        
-        <h1>Quadratic Equation Solver</h1>
-        <form id="quadraticForm">
-            <label for="a">a:</label>
-            <input type="number" id="a" required>
-            <br><br>
-            <label for="b">b:</label>
-            <input type="number" id="b" required>
-            <br><br>
-            <label for="c">c:</label>
-            <input type="number" id="c" required>
-            <br><br>
-            <button type="submit">Solve</button>
-        </form>
-        <div id="output" class="output"></div>
-    
-        <script>
-            document.getElementById('quadraticForm').addEventListener('submit', function(event) {
-                event.preventDefault();
-    
-                const a = parseFloat(document.getElementById('a').value);
-                const b = parseFloat(document.getElementById('b').value);
-                const c = parseFloat(document.getElementById('c').value);
-    
-                // Calculate the discriminant
-                const discriminant = b * b - 4 * a * c;
-    
-                // Function to convert number to fraction form
-                function toFraction(num) {
-                    if (num === 0) return '0';
-                    const gcd = (x, y) => !y ? x : gcd(y, x % y);
-                    let sign = num < 0 ? -1 : 1;
-                    num = Math.abs(num);
-                    let denominator = 1;
-                    let numerator = num;
-                    let integerPart = Math.floor(num);
-                    if (num !== integerPart) {
-                        while (numerator % 1 !== 0) {
-                            numerator *= 10;
-                            denominator *= 10;
-                        }
-                    }
-                    const divisor = gcd(numerator, denominator);
-                    numerator /= divisor;
-                    denominator /= divisor;
-                    return `${sign * numerator}/${denominator}`;
-                }
-    
-                // Calculate the roots
-                let output = '';
-                if (discriminant > 0) {
-                    const sqrtDiscriminant = Math.sqrt(discriminant);
-                    const root1 = (-b + sqrtDiscriminant) / (2 * a);
-                    const root2 = (-b - sqrtDiscriminant) / (2 * a);
-                    output += `
-                        <h2>Solutions:</h2>
-                        <p>The quadratic equation is <strong>${a}x² + ${b}x + ${c} = 0</strong></p>
-                        <p>Discriminant (Δ) = ${b}² - 4(${a} * ${c}) = ${discriminant}</p>
-                        <p>Root 1 = (-${b} + √(${discriminant})) / (2 * ${a}) = ${toFraction(root1)}</p>
-                        <p>Root 2 = (-${b} - √(${discriminant})) / (2 * ${a}) = ${toFraction(root2)}</p>
-                    `;
-                } else if (discriminant === 0) {
-                    const root = -b / (2 * a);
-                    output += `
-                        <h2>Solution:</h2>
-                        <p>The quadratic equation is <strong>${a}x² + ${b}x + ${c} = 0</strong></p>
-                        <p>Discriminant (Δ) = ${b}² - 4(${a} * ${c}) = ${discriminant}</p>
-                        <p>Root = -${b} / (2 * ${a}) = ${toFraction(root)}</p>
-                    `;
-                } else {
-                    output += `
-                        <h2>No Real Solutions:</h2>
-                        <p>The quadratic equation is <strong>${a}x² + ${b}x + ${c} = 0</strong></p>
-                        <p>Discriminant (Δ) = ${b}² - 4(${a} * ${c}) = ${discriminant}</p>
-                        <p>The equation has complex roots.</p>
-                    `;
-                }
-    
-                document.getElementById('output').innerHTML = output;
-            });
-        </script>
-    </body>
-    <footer data-aos="fade-up">
-        <p>&copy; 2024 Kshitij Shete and Ishan Dawane. All rights reserved.</p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-    <script>
-        AOS.init();
-
-        // Improved hover effect with JS
-        const navLinks = document.querySelectorAll('nav ul li a');
-
-        navLinks.forEach(link => {
-            link.addEventListener('mouseenter', () => {
-                link.style.transform = 'scale(1.1)';
-                link.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
-                link.style.boxShadow = '0px 4px 15px rgba(0, 0, 0, 0.3)';
-            });
-
-            link.addEventListener('mouseleave', () => {
-                link.style.transform = 'scale(1)';
-                link.style.boxShadow = 'none';
-            });
-        });
-    </script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quadratic Equation Solver</title>
+    <link rel="stylesheet" href="quadratic.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <h1>Quadratic Equation Solver</h1>
+            <form id="solverForm">
+                <div class="form-group">
+                    <label for="a">a:</label>
+                    <input type="text" id="a" required>
+                </div>
+                <div class="form-group">
+                    <label for="b">b:</label>
+                    <input type="text" id="b" required>
+                </div>
+                <div class="form-group">
+                    <label for="c">c:</label>
+                    <input type="text" id="c" required>
+                </div>
+                <button type="button" onclick="solveQuadratic()">Solve</button>
+            </form>
+        </div>
+        <div class="results-section">
+            <div id="results"></div>
+        </div>
+        <div class="chart-section">
+            <canvas id="quadraticChart"></canvas>
+        </div>
+    </div>
+    <script src="solver.js"></script>
+</body>
 </html>
