@@ -1,12 +1,43 @@
-function parseInput(input) {
-    try {
-        // Replace 'sqrt' with 'Math.sqrt'
-        input = input.replace(/sqrt\(([^)]+)\)/g, (match, p1) => `Math.sqrt(${p1})`);
-        // Evaluate the expression
-        return eval(input);
-    } catch (error) {
-        return NaN;
+function gcd(a, b) {
+    return b ? gcd(b, a % b) : a;
+}
+
+function simplifySqrt(n) {
+    let outside = 1;
+    let inside = n;
+
+    for (let i = 2; i * i <= inside; i++) {
+        while (inside % (i * i) === 0) {
+            inside /= i * i;
+            outside *= i;
+        }
     }
+
+    return { outside, inside };
+}
+
+function simplifyFraction(numerator, denominator) {
+    const divisor = gcd(numerator, denominator);
+    return [numerator / divisor, denominator / divisor];
+}
+
+function formatRoot(realPart, discriminant, a) {
+    const sqrtSimplified = simplifySqrt(Math.abs(discriminant));
+    let sqrtPart = '';
+
+    if (sqrtSimplified.inside === 1) {
+        sqrtPart = `${sqrtSimplified.outside}`;
+    } else if (sqrtSimplified.outside === 1) {
+        sqrtPart = `√${sqrtSimplified.inside}`;
+    } else {
+        sqrtPart = `${sqrtSimplified.outside}√${sqrtSimplified.inside}`;
+    }
+
+    const fraction = simplifyFraction(2 * a, gcd(realPart * 2 * a, discriminant));
+    const real = realPart / fraction[1];
+    const imag = sqrtSimplified.inside !== 0 ? ` ± (${sqrtPart}/${fraction[1]})` : '';
+
+    return `${real}${imag}`;
 }
 
 function solveQuadratic() {
@@ -15,51 +46,43 @@ function solveQuadratic() {
     const b = parseInput(document.getElementById('b').value);
     const c = parseInput(document.getElementById('c').value);
 
-    // Validate inputs
     if (isNaN(a) || isNaN(b) || isNaN(c)) {
         document.getElementById('results').innerHTML = '<p>Please enter valid numbers or expressions.</p>';
         clearChart();
         return;
     }
 
-    // Prepare result string
     let result = '';
     let explanation = '';
 
-    // Check if a is zero to prevent division by zero
     if (a === 0) {
-        explanation = 'The value of "a" cannot be zero. When a = 0, the equation becomes a linear equation of the form "bx + c = 0", not a quadratic equation.';
+        explanation = 'The value of "a" cannot be zero. This is a linear equation, not quadratic.';
         document.getElementById('results').innerHTML = `<p class="explanation">${explanation}</p>`;
         clearChart();
         return;
     } else {
-        // Compute discriminant
         const discriminant = b * b - 4 * a * c;
 
-        // Provide detailed explanation based on the discriminant
         if (discriminant > 0) {
-            explanation = 'The discriminant (b² - 4ac) is positive, indicating that there are two distinct real roots. This means the parabola intersects the x-axis at two different points.';
+            explanation = 'The discriminant is positive, so there are two distinct real roots.';
             const root1 = (-b + Math.sqrt(discriminant)) / (2 * a);
             const root2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-            result = `<p class="root">The roots are ${root1.toFixed(4)} and ${root2.toFixed(4)}.</p>`;
-            result += `<p class="explanation">The equation has two distinct real solutions, and the graph of the quadratic function crosses the x-axis at these points.</p>`;
+            result = `<p class="root">The roots are ${formatRoot(-b, discriminant, a)}</p>`;
+            result += `<p class="explanation">The equation has two distinct real solutions.</p>`;
         } else if (discriminant === 0) {
-            explanation = 'The discriminant (b² - 4ac) is zero, which means there is exactly one real root (a repeated root). The parabola touches the x-axis at exactly one point, which is the vertex of the parabola.';
+            explanation = 'The discriminant is zero, so there is one real root.';
             const root = -b / (2 * a);
-            result = `<p class="root">The root is ${root.toFixed(4)}.</p>`;
-            result += `<p class="explanation">This is the only solution, and the quadratic function has a double root, meaning the parabola just touches the x-axis without crossing it.</p>`;
+            result = `<p class="root">The root is ${root}.</p>`;
+            result += `<p class="explanation">This is a repeated real solution.</p>`;
         } else {
-            explanation = 'The discriminant (b² - 4ac) is negative, indicating that the roots are complex (imaginary). This means the parabola does not intersect the x-axis at all and the solutions involve imaginary numbers.';
+            explanation = 'The discriminant is negative, so the roots are imaginary.';
             const realPart = -b / (2 * a);
-            const imaginaryPart = Math.sqrt(-discriminant) / (2 * a);
-            result = `<p class="root">The roots are ${realPart.toFixed(4)} ± ${imaginaryPart.toFixed(4)}i.</p>`;
-            result += `<p class="explanation">The quadratic function does not cross the x-axis and the roots are complex numbers. The term "i" represents the imaginary unit.</p>`;
+            result = `<p class="root">The roots are ${formatRoot(realPart, discriminant, a)}.</p>`;
+            result += `<p class="explanation">These are complex numbers with imaginary solutions.</p>`;
         }
 
-        // Display results
         document.getElementById('results').innerHTML = `<h2>Results:</h2>${result}<p class="explanation">${explanation}</p>`;
 
-        // Plot the graph
         plotGraph(a, b, c);
     }
 }
@@ -77,14 +100,12 @@ function plotGraph(a, b, c) {
         }]
     };
 
-    // Generate data points
     for (let x = -10; x <= 10; x += 0.1) {
         const y = a * x * x + b * x + c;
         chartData.labels.push(x.toFixed(1));
         chartData.datasets[0].data.push(y);
     }
 
-    // Create the chart
     new Chart(ctx, {
         type: 'line',
         data: chartData,
