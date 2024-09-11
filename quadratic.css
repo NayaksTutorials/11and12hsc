@@ -144,8 +144,37 @@ h2 {
         height: auto;
     }
 }
+/* How to Use Section Styling */
+.how-to-use {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
 
-#results .explanation {
-    margin-top: 10px;
+.how-to-use h2 {
+    color: #C62828;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.how-to-use p {
     font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.how-to-use ol {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+}
+
+.how-to-use ol li {
+    margin-bottom: 10px;
+}
+
+.how-to-use strong {
+    color: #C62828;
 }
