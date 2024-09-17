@@ -35,7 +35,8 @@ function formatRoot(realPart, discriminant, a) {
 
     const fraction = simplifyFraction(2 * a, gcd(realPart * 2 * a, discriminant));
     const real = realPart / fraction[1];
-    const imag = sqrtSimplified.inside !== 0 ? ` ± (${sqrtPart}/${fraction[1]})` : '';
+    const imaginarySign = discriminant < 0 ? 'i' : '';
+    const imag = sqrtSimplified.inside !== 0 ? ` ± (${sqrtPart}${imaginarySign}/${fraction[1]})` : '';
 
     return `${real}${imag}`;
 }
